@@ -10,7 +10,7 @@ class ProductManager {
     }
 
     // Metodo
-    addproduct(tittle, description, price, image, stock, code) {
+    addProduct(tittle, description, price, image, stock, code) {
 
         //validacion de campos
         if (!tittle || !description || !price || !image || !stock || !code) {
@@ -20,7 +20,7 @@ class ProductManager {
 
         // validacion de que es unico el codigo
         
-        if(this.products.some(item => item.code === code)){
+        if(this.product.some(item => item.code === code)){
             console.log("Que sea unico si sos muy amable, gracias y que no tengas buen dia");
             return;
     }
@@ -38,17 +38,17 @@ class ProductManager {
         code,
     }
 
-    this.products.push(ProductoNuevo);
+    this.product.push(ProductoNuevo);
 
     }
 
     getProducts() {
-        console.log(this.products);
+        console.log(this.product);
 
     }
 
     getProductById(id) {
-        const product = this.products.find(item => item.id === id);
+        const product = this.product.find(item => item.id === id);
 
         if(!product) {
             console.log("Producto no encontrado, mañana seguro te cae un rayo");
@@ -77,7 +77,7 @@ const manager = new ProductManager();
 manager.getProducts();
 
 //3 Se llamará al método “addProduct” con los campos:
-//title: “producto prueba”
+//tittle: “producto prueba”
 //description:”Este es un producto prueba”
 //price:200,
 //thumbnail:”Sin imagen”
@@ -91,10 +91,10 @@ manager.getProducts();
 //4 El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
 
 
-manager.addProduct("fideos", "los mas ricos", 200, "sin imagen", "abc124", 50);
+manager.addProduct("fideos", "los mas ricos", 200, "sin imagen", 50, "abc124");
 
 
-manager.addProduct("arroz", "los mas ricos", 200, "sin imagen", "abc125", 50);
+manager.addProduct("arroz", "los mas ricos", 200, "sin imagen", 50, "abc125");
 
 //5 Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
 
