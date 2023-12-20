@@ -1,204 +1,165 @@
-// Desafio entregable backend 2
+//Desafio entregable 2
 
-const fs = requier ("fs").promises;
+const fs = require("fs").promises;
 
 class ProductManager {
-   
-    //variable estatica
-    static ultId = 0;
-   
-    constructor(path) {
-        this.product = [];
-        this.path = path;
+  static ultId = 0;
+
+  constructor(path) {
+    this.product = [];
+    this.path = path;
+  }
+
+  async addProduct(newObject) {
+    let { title, description, price, img, code, stock } = newObject;
+
+    if (!title || !description || !price || !img || !stock || !code) {
+      console.log("Todos los campos son obligatorios, o los completas o te doxeo");
+      return;
     }
 
-    // Metodo
-    async addProduct(newObjet) {
-
-        let { title, description, price, img, code, stock } = newObjet;
-
-        //validacion de campos
-        if (!tittle || !description || !price || !image || !stock || !code) {
-            console.log("Todos los campos son obligatorios, o los completas o te doxeo");
-            return;
-        }
-
-        // validacion de que es unico el codigo
-        
-        if(this.product.some(item => item.code === code)){
-            console.log("Que sea unico si sos muy amable, gracias y que no tengas buen dia");
-            return;
-    }
-    
-    //Objeto
-    
-    const ProductoNuevo = {
-        
-        id: ++ProductManager.ultId,
-        tittle,
-        description,
-        price,
-        image,
-        stock,
-        code,
+    if (this.product.some((item) => item.code === code)) {
+      console.log("Que sea único si sos muy amable, gracias y que no tengas buen día");
+      return;
     }
 
-    this.product.push(ProductoNuevo);
+    const productoNuevo = {
+      id: ++ProductManager.ultId,
+      title,
+      description,
+      price,
+      img,
+      stock,
+      code,
+    };
+
+    this.product.push(productoNuevo);
 
     await this.guardarArchivo(this.product);
+  }
 
-    }
+  getProducts() {
+    return this.product;
+  }
 
-    getProducts() {
-        console.log(this.product);
-
-    }
-
-    async getProductById(id) {
-        try {
-            const arrayProductos = await this.leerArchivo();
-            const buscado = arrayProductos.find(item => item.id === id);
-
-            if (!buscado) {
-                console.log("Producto no encontrado");
-            } else {
-                console.log("Siii, lo encontramos! ");
-                return buscado;
-            }
-
-        } catch (error) {
-            console.log("Error al leer el archivo ", error);
-        }
-
-    }
-}    
-
-//metodos Desafio 2
-
-
-async leerArchivo() {
+  async getProductById(id) {
     try {
-        const respuesta = await fs.readFile(this.path, "utf-8");
-        const arrayProductos = JSON.parse(respuesta);
-        return arrayProductos;
+      const arrayProductos = await this.leerArchivo();
+      const buscado = arrayProductos.find((item) => item.id === id);
 
+      if (!buscado) {
+        console.log("Producto no encontrado");
+      } else {
+        console.log("¡Sí, lo encontramos!");
+        return buscado;
+      }
     } catch (error) {
-        console.log("Error en la lectura del archivo", error);
+      console.log("Error al leer el archivo", error);
     }
-}
+  }
 
-async guardarArchivo(arrayProductos) {
+  async leerArchivo() {
     try {
-        await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
+      const respuesta = await fs.readFile(this.path, "utf-8");
+      const arrayProductos = JSON.parse(respuesta);
+      return arrayProductos;
     } catch (error) {
-        console.log("Error guardando el archivo", error);
+      console.log("Error en la lectura del archivo", error);
     }
-}
+  }
 
-//Actualizamos algun producto:
-
-async updateProduct(id, productoActualizado) {
+  async guardarArchivo(arrayProductos) {
     try {
-        const arrayProductos = await this.leerArchivo();
-
-        const index = arrayProductos.findIndex(item => item.id === id);
-
-        if (index !== -1) {
-            //Puedo usar el método de array splice para reemplazar el objeto en la posicion del index: 
-            arrayProductos.splice(index, 1, productoActualizado);
-            await this.guardarArchivo(arrayProductos);
-        } else {
-            console.log("no se encontró el producto");
-        }
-
+      await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
     } catch (error) {
-        console.log("Error al actualizar el producto", error);
+      console.log("Error guardando el archivo", error);
     }
+  }
+
+  async updateProduct(id, productoActualizado) {
+    try {
+      const arrayProductos = await this.leerArchivo();
+
+      const index = arrayProductos.findIndex((item) => item.id === id);
+
+      if (index !== -1) {
+        arrayProductos.splice(index, 1, productoActualizado);
+        await this.guardarArchivo(arrayProductos);
+      } else {
+        console.log("No se encontró el producto");
+      }
+    } catch (error) {
+      console.log("Error al actualizar el producto", error);
+    }
+  }
+
+  async deleteProduct(id) {
+    try {
+      const arrayProductos = await this.leerArchivo();
+
+      const index = arrayProductos.findIndex((item) => item.id === id);
+
+      if (index !== -1) {
+        arrayProductos.splice(index, 1);
+        await this.guardarArchivo(arrayProductos);
+        console.log("Producto eliminado exitosamente");
+      } else {
+        console.log("No se encontró el producto");
+      }
+    } catch (error) {
+      console.log("Error al eliminar el producto", error);
+    }
+  }
 }
-
-
-
-
-
-//test si funca 
-
-//1 Se creará una instancia de la clase “ProductManager”
 
 const manager = new ProductManager("./productos.json");
 
-//2 Se llamará “getProducts” recién creada la instancia, debe devolver un arreglo vacío []
-
-manager.getProducts();
-
-//3 Se llamará al método “addProduct” con los campos:
-//tittle: “producto prueba”
-//description:”Este es un producto prueba”
-//price:200,
-//thumbnail:”Sin imagen”
-//stock:25,
-//code:”abc123”
+console.log(manager.getProducts());
 
 const panDulce = {
-    title: "panDulce",
-    description: "dulce como la victoria",
-    price: 725,
-    img: "sin imagen",
-    stock: 10,
-    code: "abc123"
-}
-
+  title: "panDulce",
+  description: "dulce como la victoria",
+  price: 725,
+  img: "sin imagen",
+  stock: 10,
+  code: "abc123",
+};
 manager.addProduct(panDulce);
-/*
-
-//4 El objeto debe agregarse satisfactoriamente con un id generado automáticamente SIN REPETIRSE
-
 
 const yerba = {
-    title: "yerba",
-    description: "la mejor del pais",
-    price: 800,
-    img: "sin imagen",
-    stock: 10,
-    code: "abc123"
-}
+  title: "yerba",
+  description: "la mejor del país",
+  price: 800,
+  img: "sin imagen",
+  stock: 10,
+  code: "abc123",
+};
+manager.addProduct(yerba);
 
-manager.addProduct(panDulce);
-/*
-//Repetimos el codigo: 
-
-//manager.addProduct(aceite);
-//Las validaciones funcionan. 
-
-//Se llamará el método “getProducts” nuevamente, esta vez debe aparecer el producto recién agregado
-
-
-manager.getProducts();
-
-//Se llamará al método “getProductById” y se corroborará que devuelva el producto con el id especificado, en caso de no existir, debe arrojar un error.
+console.log(manager.getProducts());
 
 async function testeamosBusquedaPorId() {
-    const buscado = await manager.getProductById(2);
-    console.log(buscado);
+  const buscado = await manager.getProductById(2);
+  console.log(buscado);
 }
-
 testeamosBusquedaPorId();
 
-//Se llamará al método “updateProduct” y se intentará cambiar un campo de algún producto, se evaluará que no se elimine el id y que sí se haya hecho la actualización.
-
 const mostaza = {
-    id: 1,
-    title: "mostaza", 
-    description: "Saborizante", 
-    price: 150,
-    img: "Sin imagen",
-    code: "abc123",
-    stock: 30
+  id: 1,
+  title: "mostaza",
+  description: "Saborizante",
+  price: 150,
+  img: "Sin imagen",
+  code: "abc123",
+  stock: 30,
 };
 
 async function testeamosActualizar() {
-    await manager.updateProduct(1, mostaza);
+  await manager.updateProduct(1, mostaza);
 }
-
 testeamosActualizar();
-*/
 
+async function testeamosEliminar() {
+  await manager.deleteProduct(1);
+}
+testeamosEliminar();
