@@ -185,10 +185,10 @@ testeamosBusquedaPorId();
 
 //Se llamará al método “updateProduct” y se intentará cambiar un campo de algún producto, se evaluará que no se elimine el id y que sí se haya hecho la actualización.
 
-const salsa = {
+const mostaza = {
     id: 1,
-    title: "salsa tomate", 
-    description: "los mas ricos", 
+    title: "mostaza", 
+    description: "Saborizante", 
     price: 150,
     img: "Sin imagen",
     code: "abc123",
@@ -196,7 +196,7 @@ const salsa = {
 };
 
 async function testeamosActualizar() {
-    await manager.updateProduct(1, salsa);
+    await manager.updateProduct(1, mostaza);
 }
 
 testeamosActualizar();
