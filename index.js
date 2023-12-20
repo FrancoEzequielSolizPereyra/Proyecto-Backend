@@ -10,6 +10,8 @@ class ProductManager {
     this.path = path;
   }
 
+  //Métodos: 
+
   async addProduct(newObject) {
     let { title, description, price, img, code, stock } = newObject;
 
@@ -111,10 +113,16 @@ class ProductManager {
     }
   }
 }
+//testing
+
+//Se creará una instancia de la clase “ProductManager”
 
 const manager = new ProductManager("./productos.json");
 
+
+
 console.log(manager.getProducts());
+
 
 const panDulce = {
   title: "panDulce",
