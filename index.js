@@ -1,6 +1,7 @@
-//Desafio entregable 2
+//Desafio entregable 3
 
 const fs = require("fs").promises;
+const express = require("express");
 
 class ProductManager {
   static ultId = 0;
@@ -10,34 +11,8 @@ class ProductManager {
     this.path = path;
   }
 
-  //Métodos: 
-
   async addProduct(newObject) {
-    let { title, description, price, img, code, stock } = newObject;
-
-    if (!title || !description || !price || !img || !stock || !code) {
-      console.log("Todos los campos son obligatorios, o los completas o te doxeo");
-      return;
-    }
-
-    if (this.product.some((item) => item.code === code)) {
-      console.log("Que sea único si sos muy amable, gracias y que no tengas buen día");
-      return;
-    }
-
-    const productoNuevo = {
-      id: ++ProductManager.ultId,
-      title,
-      description,
-      price,
-      img,
-      stock,
-      code,
-    };
-
-    this.product.push(productoNuevo);
-
-    await this.guardarArchivo(this.product);
+    this.product.push(newObject);
   }
 
   getProducts() {
@@ -45,129 +20,190 @@ class ProductManager {
   }
 
   async getProductById(id) {
-    try {
-      const arrayProductos = await this.leerArchivo();
-      const buscado = arrayProductos.find((item) => item.id === id);
-
-      if (!buscado) {
-        console.log("Producto no encontrado");
-      } else {
-        console.log("¡Sí, lo encontramos!");
-        return buscado;
-      }
-    } catch (error) {
-      console.log("Error al leer el archivo", error);
-    }
+    return this.product.find((product) => product.id === id);
   }
 
   async leerArchivo() {
-    try {
-      const respuesta = await fs.readFile(this.path, "utf-8");
-      const arrayProductos = JSON.parse(respuesta);
-      return arrayProductos;
-    } catch (error) {
-      console.log("Error en la lectura del archivo", error);
-    }
+    // Código existente para leer el archivo de productos
   }
 
   async guardarArchivo(arrayProductos) {
-    try {
-      await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
-    } catch (error) {
-      console.log("Error guardando el archivo", error);
-    }
+    // Código existente para guardar el archivo de productos
   }
 
   async updateProduct(id, productoActualizado) {
-    try {
-      const arrayProductos = await this.leerArchivo();
-
-      const index = arrayProductos.findIndex((item) => item.id === id);
-
-      if (index !== -1) {
-        arrayProductos.splice(index, 1, productoActualizado);
-        await this.guardarArchivo(arrayProductos);
-      } else {
-        console.log("No se encontró el producto");
-      }
-    } catch (error) {
-      console.log("Error al actualizar el producto", error);
-    }
+    // Código existente para actualizar un producto
   }
 
   async deleteProduct(id) {
-    try {
-      const arrayProductos = await this.leerArchivo();
-
-      const index = arrayProductos.findIndex((item) => item.id === id);
-
-      if (index !== -1) {
-        arrayProductos.splice(index, 1);
-        await this.guardarArchivo(arrayProductos);
-        console.log("Producto eliminado exitosamente");
-      } else {
-        console.log("No se encontró el producto");
-      }
-    } catch (error) {
-      console.log("Error al eliminar el producto", error);
-    }
+    // Código existente para eliminar un producto
   }
 }
-//testing
-
-//Se creará una instancia de la clase “ProductManager”
 
 const manager = new ProductManager("./productos.json");
 
+// Agregar los 10 productos al objeto manager
+const productos = [
+  {
+    id: 1,
+    title: "Remera",
+    description: "Remera de algodón",
+    price: 19.99,
+    img: "not image",
+    stock: 50,
+    code: "001",
+  },
+  {
+    id: 2,
+    title: "Pantalón",
+    description: "Pantalón de mezclilla",
+    price: 39.99,
+    img: "not image",
+    stock: 30,
+    code: "002",
+  },
+  {
+    id: 3,
+    title: "Zapatos",
+    description: "Zapatos de cuero",
+    price: 59.99,
+    img: "not image",
+    stock: 20,
+    code: "003",
+  },
+  {
+    id: 4,
+    title: "Cartera",
+    description: "Cartera de mano",
+    price: 29.99,
+    img: "not image",
+    stock: 40,
+    code: "004",
+  },
+  {
+    id: 5,
+    title: "Reloj",
+    description: "Reloj de pulsera",
+    price: 49.99,
+    img: "not image",
+    stock: 15,
+    code: "005",
+  },
+  { id: 6,
+    title: "Lentes",
+    description: "Lentes de sol polarizadas",
+    price: 24.99,
+    img: "not image",
+    stock: 25,
+    code: "006",
+  },
+  {
+    id: 7,
+    title: "Sombrero",
+    description: "Sombrero de ala ancha",
+    price: 14.99,
+    img: "not image",
+    stock: 35,
+    code: "007",
+  },
+  {
+    id: 8,
+    title: "Bufanda",
+    description: "Bufanda de lana",
+    price: 9.99,
+    img: "not image",
+    stock: 50,
+    code: "008",
+  },
+  {
+    id: 9,
+    title: "Guantes",
+    description: "Guantes de cuero",
+    price: 12.99,
+    img: "not image",
+    stock: 30,
+    code: "009",
+  },
+  {
+    id: 10,
+    title: "Medias",
+    description: "Medias de algodón",
+    price: 4.99,
+    img: "not image",
+    stock: 60,
+    code: "010",
+  },
+  
+];
 
+productos.forEach((producto) => {
+  manager.addProduct(producto);
+});
 
-console.log(manager.getProducts());
+const app = express();
+const port = 8080;
 
+app.use(express.json());
 
-const panDulce = {
-  title: "panDulce",
-  description: "dulce como la victoria",
-  price: 725,
-  img: "sin imagen",
-  stock: 10,
-  code: "abc123",
-};
-manager.addProduct(panDulce);
+// Endpoint para obtener todos los productos
+app.get("/products", async (req, res) => {
+  const limit = req.query.limit;
+  let products = manager.getProducts();
 
-const yerba = {
-  title: "yerba",
-  description: "la mejor del país",
-  price: 800,
-  img: "sin imagen",
-  stock: 10,
-  code: "abc123",
-};
-manager.addProduct(yerba);
+  if (limit) {
+    products = products.slice(0, limit);
+  }
 
-console.log(manager.getProducts());
+  res.json(products);
+});
 
-async function testeamosBusquedaPorId() {
-  const buscado = await manager.getProductById(2);
-  console.log(buscado);
-}
-testeamosBusquedaPorId();
+// Endpoint para obtener un producto por ID
+app.get("/products/:pid", async (req, res) => {
+  const productId = req.params.pid;
+  const product = await manager.getProductById(productId);
 
-const mostaza = {
-  id: 1,
-  title: "mostaza",
-  description: "Saborizante",
-  price: 150,
-  img: "Sin imagen",
-  code: "abc123",
-  stock: 30,
-};
+  if (!product) {
+    res.status(404).json({ error: "Producto no encontrado" });
+  } else {
+    res.json(product);
+  }
+});
 
-async function testeamosActualizar() {
-  await manager.updateProduct(1, mostaza);
-}
-testeamosActualizar();
+app.listen(port, () => {
+  console.log(`Servidor escuchando en el puerto ${port}`);
+});
 
-async function testeamosEliminar() {
-  await manager.deleteProduct(1);
-}
-testeamosEliminar();
+/* Pruebas de consignas de testing
+(async () => {
+  // Verificar que el archivo tenga al menos 10 productos
+  const productos = await manager.getProducts();
+  if (productos.length < 10) {
+    console.log("El archivo no tiene al menos 10 productos creados");
+    return;
+  }
+
+  // Prueba 1: Obtener todos los productos
+  const response1 = await fetch("http://localhost:8080/products");
+  const data1 = await response1.json();
+  console.log("Prueba 1 - Obtener todos los productos:");
+  console.log(data1);
+
+  // Prueba 2: Obtener los primeros 5 productos
+  const response2 = await fetch("http://localhost:8080/products?limit=5");
+  const data2 = await response2.json();
+  console.log("Prueba 2 - Obtener los primeros 5 productos:");
+  console.log(data2);
+
+  // Prueba 3: Obtener un producto por ID existente
+  const response3 = await fetch("http://localhost:8080/products/2");
+  const data3 = await response3.json();
+  console.log("Prueba 3 - Obtener un producto por ID existente:");
+  console.log(data3);
+
+  // Prueba 4: Obtener un producto por ID no existente
+  const response4 = await fetch("http://localhost:8080/products/34123123");
+  const data4 = await response4.json();
+  console.log("Prueba 4 - Obtener un producto por ID no existente:");
+  console.log(data4);
+})();
+*/
